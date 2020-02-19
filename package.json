@@ -1,0 +1,32 @@
+{
+  "name": "browserstack-status-update-sample",
+  "version": "1.0.0",
+  "description": "This repo is just to reproduce an issue that I'm having with updating a session-status on browserstack.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "browserstack-local": "1.4.5",
+    "chromedriver": "80.0.1",
+    "lodash.clonedeep": "4.5.0",
+    "nanoid": "2.1.11",
+    "nightwatch": "1.3.4",
+    "node-fetch": "2.6.0"
+  },
+  "scripts": {
+    "test": "BROWSERSTACK=true node test/runner-browserstack.local.js -c test/config/nightwatch-browserstack.conf.js -e chrome"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codekie/browserstack-status-update-sample.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codekie/browserstack-status-update-sample/issues"
+  },
+  "homepage": "https://github.com/codekie/browserstack-status-update-sample#readme"
+}
