@@ -44,5 +44,6 @@ Important Files
   located in `test/config/nightwatch-globals.js`
     - Setting the artificial delay `DELAY__BROWSERSTACK_STATUS` so something like `5000`ms (may vary between a value of
       `1000` and `15000` to make it work), will make the `reason` work
+- The Nightwatch-configuration for Browserstack is in `test/config/nightwatch-browserstack.conf.js`
 - The test-suites are in `test/e2e/scenarios`
 

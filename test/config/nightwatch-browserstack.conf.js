@@ -1,11 +1,6 @@
-'use strict';
+const path = require('path');
 
-/* eslint-disable camelcase */
-
-const cloneDeep = require('lodash.clonedeep');
-const BaseConfig = require('./nightwatch-base');
-
-const LAUNCH_URL = BaseConfig.test_settings.default.launch_url;
+const LAUNCH_URL = 'https://www.google.com';
 const BROWSERSTACK_USER = process.env.BROWSERSTACK_USER;
 const BROWSERSTACK_ACCESS_KEY = process.env.BROWSERSTACK_ACCESS_KEY;
 const BROWSERSTACK_BUILD_KEY = process.env.BROWSERSTACK_BUILD_KEY;
@@ -26,11 +21,20 @@ const CommonCapabilities = {
 module.exports = _createConfig();
 
 function _createConfig() {
-    const config = cloneDeep(BaseConfig);
-    delete config.webdriver;
-    delete config.test_workers;
+    const config = {
+        globals_path: path.join(__dirname, 'nightwatch-globals.js'),
+        live_output: true,
+        output_folder: path.join(__dirname, '../../reports/e2e'),
+        src_folders: [path.join(__dirname, '../e2e/scenarios')],
+        test_settings: {
+            chrome: _createSettings({
+                os: 'Windows',
+                os_version: '10',
+                browser: 'Chrome'
+            })
+        }
+    };
     _setSelenium(config);
-    _setTestSettings(config);
     return config;
 }
 
@@ -42,17 +46,6 @@ function _setSelenium(config) {
     };
     config.test_settings.selenium_host = config.selenium.host;
     config.test_settings.selenium_port = config.selenium.port;
-    return config;
-}
-
-function _setTestSettings(config) {
-    delete config.test_settings.dev;
-    delete config.test_settings.default;
-    config.test_settings.chrome = _createSettings({
-        os: 'Windows',
-        os_version: '10',
-        browser: 'Chrome'
-    });
     return config;
 }
 

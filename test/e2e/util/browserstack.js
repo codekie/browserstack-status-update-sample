@@ -9,13 +9,8 @@ const BROWSERSTACK__ACCESS_KEY = process.env.BROWSERSTACK_ACCESS_KEY;
 const createBrowserStackSuccessUrl = _urlFactory`https://api.browserstack.com/automate/sessions/${0}.json`;
 
 module.exports = {
-    isBrowserStackEnabled,
     sendBrowserStackSessionStatus
 };
-
-function isBrowserStackEnabled() {
-    return process.env.BROWSERSTACK === 'true';
-}
 
 async function sendBrowserStackSessionStatus(sessionId, testsSuccessful, { reason } = {}) {
     if (!BROWSERSTACK__USER || !BROWSERSTACK__ACCESS_KEY) {

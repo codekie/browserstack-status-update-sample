@@ -8,16 +8,9 @@ const browserstack = require('browserstack-local');
 
 // CONSTANTS
 
-const ARGV__ENV__SHORT = '-e';
-const ARGV__ENV__LONG = '--env';
-const CI__JOB_ID = process.env.CI_JOB_ID;
-const CI__JOB_NAME = process.env.CI_JOB_NAME;
-const CI__COMMIT_REF_NAME = process.env.CI_COMMIT_REF_NAME;
-const CI__COMMIT_SHORT_SHA = process.env.CI_COMMIT_SHORT_SHA;
 const BROWSERSTACK__ACCESS_KEY = process.env.BROWSERSTACK_ACCESS_KEY;
 const PATH__NIGHTWATCH = require.resolve('nightwatch/bin/nightwatch');
 const PREFIX__LOCAL_JOB = 'Local';
-const _runBrowsersInParallel = process.env.BROWSERSTACK_PARALLEL === 'true';
 
 // RUN
 
@@ -33,17 +26,15 @@ function _run() {
 
         // Code to start browserstack local before start of test
         bsLocal = _startBrowserstackLocal();
-    } catch (ex) {
+    } catch (e) {
         console.log('There was an error while starting the test runner:\n\n');
-        process.stderr.write(ex.stack + '\n');
+        process.stderr.write(e.stack + '\n');
         _shutdown(process, bsLocal, { exitCode: 2 });
     }
 }
 
 function _setBuildKey() {
-    process.env.BROWSERSTACK_BUILD_KEY = CI__JOB_NAME && CI__COMMIT_REF_NAME  // If running as CI-job
-        ? `${ CI__JOB_NAME } :: ${ CI__COMMIT_REF_NAME } :: ${ CI__COMMIT_SHORT_SHA } :: ${ CI__JOB_ID }`
-        : `${ PREFIX__LOCAL_JOB } :: ${ nanoid() }`;
+    process.env.BROWSERSTACK_BUILD_KEY = `${ PREFIX__LOCAL_JOB } :: ${ nanoid() }`;
 }
 
 function _startBrowserstackLocal() {
@@ -64,33 +55,8 @@ function _startBrowserstackLocal() {
 }
 
 async function _runNightwatch(bsLocal) {
-    if (_runBrowsersInParallel) {
-        await _runNightwatchEnvironments();
-    } else {
-        await _runEnvironmentsSequential(process.argv);
-    }
+    await _runNightwatchEnvironments();
     bsLocal.stop(function () {});
-}
-
-async function _runEnvironmentsSequential(argv, { callback } = {}) {
-    const success = {};
-    for await (let [env, possibleError] of _generateSettingsSequence(argv)) {
-        success[env] = possibleError;
-    }
-    callback && callback(success);
-}
-
-async function* _generateSettingsSequence(argv) {
-    let indexEnv = argv.indexOf(ARGV__ENV__SHORT);
-    if (indexEnv === -1) {
-        indexEnv = argv.indexOf(ARGV__ENV__LONG);
-    }
-    if (indexEnv === -1) { return argv; }
-    const envs = argv[indexEnv + 1].split(',');
-    for (let env of envs) {
-        const possibleError = await _runNightwatchEnvironments(env);
-        yield [env, !possibleError];
-    }
 }
 
 function _runNightwatchEnvironments(environmentsString) {
@@ -119,6 +85,7 @@ function _bindSignals(process, bsLocal) {
 }
 
 function _bindEvents(process, bsLocal) {
+    // Gracefully shutdown on errors
     process.on('uncaughtException', err => _logErrorAndShutdown(bsLocal, err));
     process.on('unhandledRejection', err => _logErrorAndShutdown(bsLocal, err));
 }
