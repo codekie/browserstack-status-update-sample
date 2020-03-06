@@ -7,6 +7,12 @@ The issue is that after each test-suite, a session-update will be sent to Browse
 and a reason (if the suite had at least one failing test). In this setup, it seems that the status is applied, but the
 reason is ignored (or overwritten).
 
+**UPDATE 2020-03-06**
+
+Browserstack's support found out that Nightwatch's Browserstack-"transport module" sends a session-update after each test-suite, with a blank reason. In this case that resulted in an overwritten reason.
+
+A pull request has been created in Nightwatch's repo: https://github.com/nightwatchjs/nightwatch/pull/2357
+
 
 Requirements
 ------------
